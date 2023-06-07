@@ -13,13 +13,13 @@ a {
   text-decoration: none;
 }
 
-ol  {
+ol {
   list-style: none;
 }
 
 li {
   list-style: none;
-  
+
 }
 
 img {
@@ -30,6 +30,29 @@ img {
   max-width: 1220px;
   padding: 0 10px;
   margin: 0 auto;
+}
+
+.head-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form input {
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+.form button {
+  margin-bottom: 10px;
+  width: 150px;
+  padding: 5px;
+  align-self: center;
+
 }
 
 #tab {
@@ -49,7 +72,7 @@ table {
   border-radius: 10px;
   border-spacing: 0;
   text-align: center;
-  
+
 }
 
 th {
@@ -58,7 +81,7 @@ th {
   text-shadow: 0 1px 1px #2D2020;
   padding: 10px 20px;
   cursor: pointer;
-  
+
 }
 
 
@@ -87,13 +110,13 @@ td {
   padding: 10px 20px;
   background: #F8E391;
   cursor: pointer;
-  
+
 }
 
 
 tr:last-child td:first-child {
   border-radius: 0 0 0 10px;
-  
+
 }
 
 tr:last-child td:last-child {
@@ -102,7 +125,13 @@ tr:last-child td:last-child {
 
 tr td:last-child {
   border-right: none;
-  
+
+}
+
+.butDelet {
+  margin-left: 20px;
+  border-radius: 50%;
+  padding: 5px;
 }
 
 .modal {

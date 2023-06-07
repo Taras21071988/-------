@@ -1,5 +1,10 @@
-//Создание таблицы
+//Создание "тела" списка
 const $tab = document.getElementById("tab"),
+  $addForm = document.getElementById("add-form"),
+  $nameInp = document.getElementById("add-form__name-inp"),
+  $usernameInp = document.getElementById("add-form__username-inp"),
+  $emailInp = document.getElementById("add-form__email-inp"),
+  $websiteInp = document.getElementById("add-form__website-inp"),
   $table = document.createElement("table"),
   $tableHead = document.createElement("thead"),
   $tableBody = document.createElement("tbody"),
@@ -9,7 +14,10 @@ const $tab = document.getElementById("tab"),
   $tableHeadthEmail = document.createElement("th"),
   $tableHeadthWebsite = document.createElement("th");
 $tableHeadtr.classList.add("trHead");
-$tableBody.classList.add("tbody");
+$tableHeadthName.classList.add("th");
+$tableHeadthUsername.classList.add("th");
+$tableHeadthEmail.classList.add("th");
+$tableHeadthWebsite.classList.add("th");
 $tableHeadthName.textContent = "Name";
 $tableHeadthUsername.textContent = "Username";
 $tableHeadthEmail.textContent = "Email";
@@ -24,80 +32,111 @@ $tableHead.append($tableHeadtr);
 $table.append($tableHead);
 $table.append($tableBody);
 $tab.append($table);
-let sortColumnFlag = "name";
-//Получение данных
-const url = "https://jsonplaceholder.typicode.com/users";
 
-getResorse(url);
-
-async function getResorse(url) {
-  const resp = await fetch(url);
-  const respData = await resp.json();
-
-  render(respData);
+let sortColumnFlag = "name"; //Переменная для работы сортировки
+//Переменная в которую передаю даные после обработки fetch запроса
+let state = {
+  posts: [],
+};
+//Fetch запрос и передача данныъ в переменную
+function getPosts() {
+  return fetch("https://jsonplaceholder.typicode.com/users", {
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  })
+    .then((res) => res.json())
+    .then((posts) => (state.posts = state.posts.concat(posts)));
 }
-//Рендер и сортировка таблицы
-function render(data) {
-  $tableBody.innerHTML = " "; //Очистка перед отрисовкой при сортировки
+//Функция для работы всей написанной гадости
+const cons = async () => {
+  await getPosts();
+  await console.log(state.posts);
 
-  //Сортировка
-  data = data.sort(function (a, b) {
+  await renderPost();
+};
+cons();
+//Функция для отрисовки списка
+function renderPost() {
+  const fragment = document.createDocumentFragment();
+  $tableBody.innerHTML = " "; //Очищение списка
+  //Логика сортировки
+  state.posts = state.posts.sort(function (a, b) {
     if (a[sortColumnFlag] < b[sortColumnFlag]) return -1;
   });
-  //
-  //Рендер таблицы
-  data.forEach((post) => {
+  //Рендер списка
+  state.posts.forEach((index) => {
     const userTr = document.createElement("tr");
-    userTr.classList.add("tr");
-    userTr.innerHTML = `
-      <td class="td__name">${post.name}</td>
-      <td class="td__username">${post.username}</td>
-      <td class="td__email">${post.email}</td>
-      <td class="td__website">${post.website}</td>
-    `;
-    userTr.addEventListener("click", () => openModal(post.id));
-    $tableBody.appendChild(userTr);
+    userTr.classList.add(`tr-id${index.id}`);
+    const name = document.createElement("td");
+    name.classList.add("td");
+    name.textContent = index.name;
+    const userName = document.createElement("td");
+    userName.classList.add("td");
+    userName.textContent = index.username;
+    const email = document.createElement("td");
+    email.classList.add("td");
+    email.textContent = index.email;
+    const webSite = document.createElement("td");
+    webSite.classList.add("td");
+    webSite.textContent = index.website;
+    const btnDel = document.createElement("button");
+    btnDel.classList.add("butDelet");
+    btnDel.id = `butDelet${index.id}`;
+    btnDel.textContent = "X";
+
+    userTr.appendChild(name);
+    userTr.appendChild(userName);
+    userTr.appendChild(email);
+    userTr.appendChild(webSite);
+    userTr.appendChild(btnDel);
+    fragment.appendChild(userTr);
+    name.addEventListener("click", () => openModal(index)); //Функция для работы модального окна
+    userName.addEventListener("click", () => openModal(index));
+    email.addEventListener("click", () => openModal(index));
+    webSite.addEventListener("click", () => openModal(index));
+
+    btnDel.addEventListener("click", function (e) {
+      var btnDelElement = e.target;
+      ell = btnDelElement.closest("tr");
+      ell.parentElement.removeChild(ell);
+    });
   });
+  $tableBody.appendChild(fragment);
 }
-//Работа сортировки
+
+//работа сортировок
 $tableHeadthName.addEventListener("click", function () {
   sortColumnFlag = "name";
-  getResorse(url);
+  renderPost();
 });
 
 $tableHeadthUsername.addEventListener("click", function () {
   sortColumnFlag = "username";
-  getResorse(url);
+  renderPost();
 });
 
 $tableHeadthEmail.addEventListener("click", function () {
   sortColumnFlag = "email";
-  getResorse(url);
+  renderPost();
 });
 $tableHeadthWebsite.addEventListener("click", function () {
   sortColumnFlag = "website";
-  getResorse(url);
+  renderPost();
 });
-
 //Модальное окно
-
 const modalEl = document.querySelector(".modal");
 
-async function openModal(id) {
-  const resp = await fetch(url);
-  const respData = await resp.json();
-  // console.log(respData);
-  // console.log(id);
-
+function openModal(index) {
   modalEl.classList.add("modal--show");
   modalEl.innerHTML = `
   <div class="User__cards">
     <ul>
-      <li>Name : ${respData[id - 1].name}</li>
-      <li>Username : ${respData[id - 1].username}</li><br>
-      <li>City : ${respData[id - 1].address.city}</li>
-      <li>Street : ${respData[id - 1].address.street}</li><br>
-      <li>Company : ${respData[id - 1].company.name}</li>
+      <li>Name : ${index.name}</li>
+      <li>Username : ${index.username}</li><br>
+      <li>City : ${index.address.city}</li>
+      <li>Street : ${index.address.street}</li><br>
+      <li>Company : ${index.company.name}</li>
     </ul>
     <button type="button" class="modal__button-close">Close</button>
   </div>
@@ -120,4 +159,43 @@ window.addEventListener("keydown", (e) => {
   if (e.keyCode === 27) {
     modalEl.classList.remove("modal--show");
   }
+});
+
+//Добавление пользователя
+$addForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+  //Валидация формы
+  // .trim() - не дает просто поставить пробел в поле ввода)))
+  if ($nameInp.value.trim() == "") {
+    alert("Name не введено))");
+    return;
+  }
+  if ($usernameInp.value.trim() == "") {
+    alert("Username не введен!");
+    return;
+  }
+  if ($emailInp.value.trim() == "") {
+    alert("Email не введен))");
+    return;
+  }
+  if ($websiteInp.value.trim() == "") {
+    alert("Website не введен))");
+    return;
+  }
+  //Само добавление пользователя
+  state.posts.push({
+    name: $nameInp.value.trim(),
+    username: $usernameInp.value.trim(),
+    email: $emailInp.value.trim(),
+    website: $websiteInp.value.trim(),
+    address: {
+      street: "Inp для этого не делал",
+      city: "Inp для этого не делал",
+    },
+    company: {
+      name: "Ну и для этого тоже))))",
+    },
+  });
+  renderPost();
+  console.log(state.posts);
 });
