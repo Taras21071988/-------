@@ -97,7 +97,7 @@ function renderPost() {
     webSite.addEventListener("click", () => openModal(index));
 
     btnDel.addEventListener("click", function (e) {
-      var btnDelElement = e.target;
+      let btnDelElement = e.target;
       ell = btnDelElement.closest("tr");
       ell.parentElement.removeChild(ell);
     });
